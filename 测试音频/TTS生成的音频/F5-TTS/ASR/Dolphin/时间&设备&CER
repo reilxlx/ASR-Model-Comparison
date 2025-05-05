@@ -1,0 +1,11 @@
+Looking for audio files in: /root/home/F5-TTS/tts
+Found 500 audio files to process. Sorted list:
+   ['sentence_1.wav', 'sentence_2.wav', 'sentence_3.wav', 'sentence_4.wav', 'sentence_5.wav'] ...
+   ['sentence_496.wav', 'sentence_497.wav', 'sentence_498.wav', 'sentence_499.wav', 'sentence_500.wav']
+Results will be saved to: 500.txt
+Transcribing: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████| 500/500 [04:27<00:00,  1.87it/s]
+
+
+4090
+
+平均字符错误率 (Average CER, 忽略标点): 0.1220 (12.20%)

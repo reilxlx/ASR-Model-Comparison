@@ -1,0 +1,10 @@
+--- Processing Summary ---
+Attempted to process: 500 files
+Successfully processed: 500 files
+Errors encountered: 0 files
+Total processing time (excluding model loading): 755.06 seconds
+
+4090
+
+
+平均字符错误率 (Average CER, 忽略标点): 0.0059 (0.59%)

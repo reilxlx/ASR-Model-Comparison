@@ -173,4 +173,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-*.wav
+tts.zip
+.DS_Store

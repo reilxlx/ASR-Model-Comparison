@@ -1,0 +1,13 @@
+----- Processing Summary -----
+Results saved to: '500.txt'
+Total files processed: 500
+Successful transcriptions: 500
+Failed transcriptions: 0
+Total processing time: 54.13 seconds
+Average time per file: 0.11 seconds
+-----------------------------
+
+
+4090
+
+平均字符错误率 (Average CER, 忽略标点): 0.0141 (1.41%)

@@ -1,0 +1,15 @@
+2025-05-05 18:36:28,147 - INFO - Finished processing all files.
+2025-05-05 18:36:28,147 - INFO - ------------------------------
+2025-05-05 18:36:28,147 - INFO - Batch Processing Summary
+2025-05-05 18:36:28,147 - INFO - ------------------------------
+2025-05-05 18:36:28,147 - INFO - Total files found:         500
+2025-05-05 18:36:28,147 - INFO - Successfully processed:    500
+2025-05-05 18:36:28,147 - INFO - Failed to process:         0
+2025-05-05 18:36:28,147 - INFO - Total batch duration:      0:07:13.583621
+2025-05-05 18:36:28,147 - INFO - Total API request time (successful): 0:07:13.474275
+2025-05-05 18:36:28,147 - INFO - Average API request time per successful file: 0.87 seconds
+2025-05-05 18:36:28,147 - INFO - ------------------------------
+
+4090
+
+平均字符错误率 (Average CER, 忽略标点): 0.0241 (2.41%)
