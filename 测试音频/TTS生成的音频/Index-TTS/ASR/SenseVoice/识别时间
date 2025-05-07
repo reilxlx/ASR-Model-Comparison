@@ -1,0 +1,19 @@
+3080
+----- Processing Summary -----
+Results saved to: '500-indextts.txt'
+Total files processed: 500
+Successful transcriptions: 499
+Failed transcriptions: 1
+Total processing time: 109.65 seconds
+Average time per file: 0.22 seconds
+-----------------------------
+
+4090
+----- Processing Summary -----
+Results saved to: '500-indextts.txt'
+Total files processed: 500
+Successful transcriptions: 500
+Failed transcriptions: 0
+Total processing time: 52.57 seconds
+Average time per file: 0.11 seconds
+-----------------------------

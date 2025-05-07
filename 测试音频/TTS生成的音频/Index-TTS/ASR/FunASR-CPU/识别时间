@@ -1,0 +1,11 @@
+2025-05-07 10:47:10,159 - INFO - Finished processing all files.
+2025-05-07 10:47:10,159 - INFO - ------------------------------
+2025-05-07 10:47:10,159 - INFO - Batch Processing Summary
+2025-05-07 10:47:10,159 - INFO - ------------------------------
+2025-05-07 10:47:10,159 - INFO - Total files found:         500
+2025-05-07 10:47:10,159 - INFO - Successfully processed:    500
+2025-05-07 10:47:10,159 - INFO - Failed to process:         0
+2025-05-07 10:47:10,159 - INFO - Total batch duration:      0:46:51.923212
+2025-05-07 10:47:10,159 - INFO - Total API request time (successful): 0:46:51.588096
+2025-05-07 10:47:10,159 - INFO - Average API request time per successful file: 5.62 seconds
+2025-05-07 10:47:10,159 - INFO - ------------------------------
