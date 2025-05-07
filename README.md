@@ -13,21 +13,25 @@ ASR-Model-Comparison/
 │   │   ├── Fish-Speech-1.5/     # 使用Fish-Speech-1.5模型生成的音频
 │   │   ├── Index-TTS/           # 使用Index-TTS模型生成的音频
 │   │   └── F5-TTS/              # 使用F5-TTS模型生成的音频
-│   ├── 真人录制的音频/           # 真人录制的测试音频
-│   └── 文本.txt                 # 测试音频对应的文本内容
+│   └── 真人录制的音频/           # 真人录制的测试音频
 └── ASR测试结果/                  # 各ASR模型的测试结果
     ├── 对真人录制音频的测试/      # 使用真人音频的测试结果
     │   ├── FireRedASR/         # FireRedASR模型的测试结果
     │   ├── 百度ASR算法/         # 百度ASR的测试结果
     │   ├── 阿里ASR算法/         # 阿里ASR的测试结果
     │   └── 结果分析.md          # 真人音频测试结果的综合分析
-    └── 对TTS生成音频的测试/       # 使用TTS生成音频的测试结果
-        ├── FunASR-GPU版本/      # FunASR GPU版本的测试结果
-        ├── FunASR-CPU版本/      # FunASR CPU版本的测试结果
-        ├── Dolphin/            # Dolphin模型的测试结果
-        ├── FireRedASR/         # FireRedASR模型的测试结果
-        ├── SenseVoice/         # SenseVoice模型的测试结果
-        └── Kimi-Audio/         # Kimi-Audio模型的测试结果
+    ├── 对TTS(Fish-Speech-1.5)生成音频的测试/  # 使用Fish-Speech-1.5生成音频的测试结果
+    │   ├── FireRedASR/         # FireRedASR模型的测试结果
+    │   ├── FunASR-GPU版本/      # FunASR GPU版本的测试结果
+    │   ├── FunASR-CPU版本/      # FunASR CPU版本的测试结果
+    │   ├── Dolphin/            # Dolphin模型的测试结果
+    │   ├── SenseVoice/         # SenseVoice模型的测试结果
+    │   ├── Kimi-Audio/         # Kimi-Audio模型的测试结果
+    │   └── CER结果.md           # Fish-Speech-1.5测试结果的综合分析
+    ├── 对TTS(Index-TTS)生成音频的测试/  # 使用Index-TTS生成音频的测试结果
+    ├── 对TTS(F5-TTS)生成音频的测试/     # 使用F5-TTS生成音频的测试结果
+    ├── 统计音频总时长代码/        # 用于统计音频数据集总时长的脚本和代码
+    └── 计算CER代码/              # 用于计算字符错误率的脚本和代码
 ```
 
 ## 测试数据集
@@ -235,7 +239,7 @@ ASR-Model-Comparison/
 
 - **准确性表现异常**:
   - Dolphin在不同TTS数据集上表现差异极大 (2.92%-19.39%)，对Index-TTS音频的识别尤其困难
-  - 百度ASR在所有测试中表现相对较弱，CER通常在7-9%之间
+  - 百度ASR在测试中表现相对较弱
 
 ### 多数据集速度比较
 
@@ -263,30 +267,6 @@ ASR-Model-Comparison/
 - 不同TTS引擎生成的音频对ASR识别准确率有显著影响
 - Index-TTS和F5-TTS生成的音频通常比Fish-Speech-1.5更易被识别
 - 模型对不同TTS数据的适应性存在差异，如Dolphin对不同TTS音频的识别能力差异极大
-
-## 最佳选择建议
-
-根据不同应用场景，推荐以下ASR模型：
-
-1. **追求最高准确率场景**:
-   - FireRedASR 或 Kimi-Audio
-   - 适用于医疗、法律等对准确性有极高要求的场景
-
-2. **实时处理场景**:
-   - SenseVoice (低延迟，高吞吐量)
-   - 适用于直播转写、实时会议记录等
-
-3. **资源受限场景**:
-   - SenseVoice (GPU资源有限)
-   - FunASR-CPU (无GPU环境)
-
-4. **平衡性能场景**:
-   - FunASR-GPU (准确率和速度较为平衡)
-   - 适用于一般商业应用
-
-5. **高并发场景**:
-   - FunASR (压力测试表现良好)
-   - 适用于需要处理多用户同时请求的系统
 
 ## 注意事项
 
