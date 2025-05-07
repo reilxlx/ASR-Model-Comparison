@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASR 模型性能综合对比评测</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind gray-50 */
+        }
+        .container {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+        }
+        h1, h2, h3, h4 {
+            color: #1e293b; /* Tailwind slate-800 */
+        }
+        h1 {
+            font-size: 2.25rem; /* Tailwind text-4xl */
+            font-weight: 700; /* Tailwind font-bold */
+            margin-bottom: 1.5rem; /* Tailwind mb-6 */
+            text-align: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0; /* Tailwind slate-200 */
+        }
+        h2 { /* Simplified styling for H2 titles */
+            font-size: 1.875rem; /* Tailwind text-3xl */
+            font-weight: 600; /* Tailwind font-semibold */
+            margin-top: 2.5rem; /* Tailwind mt-10 */
+            margin-bottom: 1.25rem; /* Tailwind mb-5 */
+            padding-left: 0.75rem; /* Tailwind pl-3 */
+            color: #334155; /* Tailwind slate-700 */
+            border-left: 4px solid #9ca3af; /* Tailwind gray-400 */
+        }
+        h3 { /* Simplified styling for H3 titles */
+            font-size: 1.5rem; /* Tailwind text-2xl */
+            font-weight: 600; /* Tailwind font-semibold */
+            margin-top: 2rem; /* Tailwind mt-8 */
+            margin-bottom: 0.75rem; /* Tailwind mb-3 */
+            color: #2563eb; /* Tailwind blue-600 */
+        }
+        h4 {
+            font-size: 1.25rem; /* Tailwind text-xl */
+            font-weight: 600; /* Tailwind font-semibold */
+            margin-top: 1.5rem; /* Tailwind mt-6 */
+            margin-bottom: 0.5rem; /* Tailwind mb-2 */
+            color: #475569; /* Tailwind slate-600 */
+        }
+        p, li {
+            color: #475569; /* Tailwind slate-600 */
+            line-height: 1.75; /* Tailwind leading-relaxed */
+            margin-bottom: 0.75rem; /* Tailwind mb-3 */
+        }
+        table {
+            width: 100%;
+            margin-top: 1rem; /* Tailwind mt-4 */
+            margin-bottom: 1.5rem; /* Tailwind mb-6 */
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Soft shadow */
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            overflow: hidden; /* To make border-radius work with th/td */
+        }
+        th, td {
+            border: 1px solid #e2e8f0; /* Tailwind slate-200 */
+            padding: 0.75rem 1rem; /* Tailwind p-3 px-4 */
+            text-align: left;
+            font-size: 0.875rem; /* Tailwind text-sm */
+        }
+        th {
+            background-color: #f1f5f9; /* Tailwind slate-100 */
+            font-weight: 600; /* Tailwind font-semibold */
+            color: #1e293b; /* Tailwind slate-800 */
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f8fafc; /* Tailwind gray-50 */
+        }
+        tbody tr:hover {
+            background-color: #e2e8f0; /* Tailwind slate-200 */
+        }
+        pre {
+            background-color: #1e293b; /* Tailwind slate-800 */
+            color: #e2e8f0; /* Tailwind slate-200 */
+            padding: 1rem; /* Tailwind p-4 */
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            overflow-x: auto;
+            margin-top: 0.5rem; /* Tailwind mt-2 */
+            margin-bottom: 1rem; /* Tailwind mb-4 */
+            font-size: 0.875rem; /* Tailwind text-sm */
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .card {
+            background-color: #ffffff; /* White */
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            padding: 1.5rem; /* Tailwind p-6 */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* Tailwind shadow-lg */
+            margin-bottom: 1.5rem; /* Tailwind mb-6 */
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 0.25rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .badge-blue {
+            background-color: #bfdbfe; /* Tailwind blue-200 */
+            color: #1e40af; /* Tailwind blue-800 */
+        }
+        .badge-green {
+            background-color: #bbf7d0; /* Tailwind green-200 */
+            color: #166534; /* Tailwind green-800 */
+        }
+        .badge-yellow {
+            background-color: #fef08a; /* Tailwind yellow-200 */
+            color: #854d0e; /* Tailwind yellow-800 */
+        }
+        .badge-red {
+            background-color: #fecaca; /* Tailwind red-200 */
+            color: #991b1b; /* Tailwind red-800 */
+        }
+        .badge-gray {
+            background-color: #e5e7eb; /* Tailwind gray-200 */
+            color: #374151; /* Tailwind gray-700 */
+        }
+        .github-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: #2563eb; /* Tailwind blue-600 */
+            color: white;
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .github-link:hover {
+            background-color: #1d4ed8; /* Tailwind blue-700 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ASR模型性能综合对比评测</h1>
+        <p class="text-center text-slate-500 mb-8">
+            本页面展示了对多种自动语音识别(ASR)模型的全面评测和比较。
+            <a href="https://github.com/reilxlx/ASR-Model-Comparison" target="_blank" class="github-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 inline-block mr-1">
+                  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+                </svg>
+                访问 GitHub 仓库
+            </a>
+        </p>
+
+        <div class="card">
+            <h2>项目概述</h2>
+            <p>本项目旨在对多种自动语音识别(ASR)模型进行全面评测和比较，包括开源和商业模型。通过使用不同来源的测试音频数据（包括真人录制和多种TTS生成的音频），对不同ASR系统的准确性、速度和资源消耗等方面进行客观对比。</p>
+        </div>
+
+        <div class="card">
+            <h2>测试数据集</h2>
+            <h3>数据集基本信息</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="p-4 border border-slate-200 rounded-lg">
+                    <h4>1. 真人录制音频数据集</h4>
+                    <ul class="list-disc list-inside">
+                        <li>音频文件数量: 171个</li>
+                        <li>总时长：32分18秒 (1937.88秒)</li>
+                        <li>平均时长：11.33秒/文件</li>
+                    </ul>
+                </div>
+                <div class="p-4 border border-slate-200 rounded-lg">
+                    <h4>2. Fish-Speech-1.5生成音频数据集</h4>
+                    <ul class="list-disc list-inside">
+                        <li>音频文件数量：171</li>
+                        <li>总时长（秒）：1633.58</li>
+                        <li>总时长（hh:mm:ss）：00:27:14</li>
+                        <li>平均时长（秒）：9.55</li>
+                        <li>平均时长（hh:mm:ss）：00:00:10</li>
+                    </ul>
+                </div>
+                <div class="p-4 border border-slate-200 rounded-lg">
+                    <h4>3. Index-TTS生成音频数据集</h4>
+                    <ul class="list-disc list-inside">
+                        <li>音频文件数量：500</li>
+                        <li>总音频时长：10616.66秒（约176.94分钟）</li>
+                    </ul>
+                </div>
+                <div class="p-4 border border-slate-200 rounded-lg">
+                    <h4>4. F5-TTS生成音频数据集</h4>
+                    <ul class="list-disc list-inside">
+                        <li>音频文件数量：500</li>
+                        <li>总音频时长：9935.97 秒（约 165.60 分钟）</li>
+                    </ul>
+                </div>
+            </div>
+            <h3 class="mt-6">文本内容</h3>
+            <p>测试数据集包含多种场景和领域的内容，详细信息请参照项目中的 <code>测试音频/文本.txt</code> 文件。</p>
+        </div>
+
+        <div class="card">
+            <h2>模型测试结果</h2>
+            <h3>对真人录制音频的测试结果 (171个文件)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ASR模型</th>
+                        <th>平均字符错误率(CER)</th>
+                        <th>处理总时间(秒)</th>
+                        <th>实时因子(RTF)</th>
+                        <th>成功处理文件数</th>
+                        <th>错误文件数</th>
+                        <th>平均处理时间/文件(秒)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>FireRedASR</td>
+                        <td>2.30%</td>
+                        <td>289.01</td>
+                        <td>0.15</td>
+                        <td>171</td>
+                        <td>0</td>
+                        <td>1.69</td>
+                    </tr>
+                    <tr>
+                        <td>阿里ASR</td>
+                        <td>2.93%</td>
+                        <td>447</td>
+                        <td>0.23</td>
+                        <td>171</td>
+                        <td>0</td>
+                        <td>2.61</td>
+                    </tr>
+                    <tr>
+                        <td>百度ASR</td>
+                        <td>8.57%</td>
+                        <td>1974.18</td>
+                        <td>1.02</td>
+                        <td>171</td>
+                        <td>0</td>
+                        <td>11.54</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>对Fish-Speech-1.5生成音频的测试结果 (171个文件)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ASR模型</th>
+                        <th>文件处理成功率</th>
+                        <th>平均字符错误率(CER)</th>
+                        <th>总处理时间(秒)</th>
+                        <th>平均处理时间/文件(秒)</th>
+                        <th>RTF</th>
+                        <th>显存占用</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>FireRedASR</td>
+                        <td>100% (171/171)</td>
+                        <td>0.93%</td>
+                        <td>401.88</td>
+                        <td>2.35</td>
+                        <td>0.246</td>
+                        <td>～5.6GB （T4）</td>
+                    </tr>
+                    <tr>
+                        <td>Kimi-Audio</td>
+                        <td>100% (171/171)</td>
+                        <td>1.25%</td>
+                        <td>203.12</td>
+                        <td>1.19</td>
+                        <td>0.124</td>
+                        <td>~30GB (RTX 4090)</td>
+                    </tr>
+                    <tr>
+                        <td>SenseVoice</td>
+                        <td>100% (171/171)</td>
+                        <td>2.23%</td>
+                        <td>27.51</td>
+                        <td>0.16</td>
+                        <td>0.017</td>
+                        <td>~1.5GB (RTX 4090)</td>
+                    </tr>
+                    <tr>
+                        <td>阿里ASR</td>
+                        <td>100% (171/171)</td>
+                        <td>2.73%</td>
+                        <td>396</td>
+                        <td>2.32</td>
+                        <td>0.242</td>
+                        <td>Kunpeng 920 (CPU only)</td>
+                    </tr>
+                    <tr>
+                        <td>Dolphin</td>
+                        <td>100% (171/171)</td>
+                        <td>2.92%</td>
+                        <td>101/52*</td>
+                        <td>0.59/0.30*</td>
+                        <td>0.062/0.032*</td>
+                        <td>~2.3GB (RTX 3080/4090**)</td>
+                    </tr>
+                    <tr>
+                        <td>FunASR-GPU版本</td>
+                        <td>100% (171/171)</td>
+                        <td>3.98%</td>
+                        <td>85.80</td>
+                        <td>0.50</td>
+                        <td>0.053</td>
+                        <td>~3GB (RTX 3080)</td>
+                    </tr>
+                    <tr>
+                        <td>FunASR-CPU版本</td>
+                        <td>100% (171/171)</td>
+                        <td>4.02%</td>
+                        <td>115.11</td>
+                        <td>0.67</td>
+                        <td>0.070</td>
+                        <td>N/A (CPU only)</td>
+                    </tr>
+                    <tr>
+                        <td>百度ASR</td>
+                        <td>100% (171/171)</td>
+                        <td>7.70%</td>
+                        <td>1679.65</td>
+                        <td>9.82</td>
+                        <td>1.028</td>
+                        <td>Kunpeng 920 (CPU only)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="text-sm text-slate-500">*注: Dolphin模型分别在RTX 3080(101秒)和RTX 4090(52秒)上进行了测试。</p>
+
+            <h3>对Index-TTS生成音频的测试结果 (500个文件)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ASR模型</th>
+                        <th>平均字错误率(CER)</th>
+                        <th>总识别时间(秒)</th>
+                        <th>平均每条音频处理时间(秒)</th>
+                        <th>RTF</th>
+                        <th>显存占用</th>
+                        <th>测试设备</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>FireRedASR</td><td>0.54%</td><td>866.85</td><td>1.73</td><td>0.0816</td><td>9.6GB</td><td>RTX 4090</td></tr>
+                    <tr><td>Kimi-Audio</td><td>0.55%</td><td>754.62</td><td>1.51</td><td>0.0711</td><td>29.7GB</td><td>RTX 4090</td></tr>
+                    <tr><td>SenseVoice (4090)</td><td>1.13%</td><td>52.57</td><td>0.11</td><td>0.0049</td><td>1.5GB</td><td>RTX 4090</td></tr>
+                    <tr><td>SenseVoice (3080)</td><td>1.51%</td><td>109.65</td><td>0.22</td><td>0.0103</td><td>-</td><td>RTX 3080</td></tr>
+                    <tr><td>FunASR-CPU</td><td>1.44%</td><td>2811.92</td><td>5.62</td><td>0.2648</td><td>不适用</td><td>CPU</td></tr>
+                    <tr><td>FunASR-GPU</td><td>2.17%</td><td>500.63</td><td>1.00</td><td>0.0471</td><td>3.7GB</td><td>RTX 4090</td></tr>
+                    <tr><td>Dolphin</td><td>19.39%</td><td>243</td><td>0.49</td><td>0.0229</td><td>2.1GB</td><td>RTX 4090</td></tr>
+                </tbody>
+            </table>
+
+            <h3>对F5-TTS生成音频的测试结果 (500个文件)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>模型名称</th>
+                        <th>处理设备</th>
+                        <th>总处理时间(秒)</th>
+                        <th>平均每文件处理时间(秒)</th>
+                        <th>字符错误率(CER)</th>
+                        <th>RTF</th>
+                        <th>成功处理文件数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Dolphin</td><td>4090</td><td>267</td><td>0.53</td><td>12.20%</td><td>0.0269</td><td>500/500</td></tr>
+                    <tr><td>FireRedASR</td><td>T4</td><td>6150.43</td><td>12.3</td><td>0.82%</td><td>0.6190</td><td>500/500</td></tr>
+                    <tr><td>FunASR-GPU</td><td>4090</td><td>433.58</td><td>0.87</td><td>2.41%</td><td>0.0436</td><td>500/500</td></tr>
+                    <tr><td>Kimi-Audio</td><td>4090</td><td>755.06</td><td>1.51</td><td>0.59%</td><td>0.0760</td><td>500/500</td></tr>
+                    <tr><td>SenseVoice</td><td>4090</td><td>54.13</td><td>0.11</td><td>1.41%</td><td>0.0054</td><td>500/500</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>不同TTS音频测试的对比分析</h2>
+            <h3>准确率对比 (CER从低到高排序)</h3>
+            <table>
+                <thead>
+                    <tr><th>ASR模型</th><th>真人录制音频</th><th>Fish-Speech-1.5</th><th>Index-TTS</th><th>F5-TTS</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>FireRedASR</td><td>2.30%</td><td>0.93%</td><td>0.54%</td><td>0.82%</td></tr>
+                    <tr><td>Kimi-Audio</td><td>-</td><td>1.25%</td><td>0.55%</td><td>0.59%</td></tr>
+                    <tr><td>SenseVoice</td><td>-</td><td>2.23%</td><td>1.13%</td><td>1.41%</td></tr>
+                    <tr><td>FunASR-GPU</td><td>-</td><td>3.98%</td><td>2.17%</td><td>2.41%</td></tr>
+                    <tr><td>Dolphin</td><td>-</td><td>2.92%</td><td>19.39%</td><td>12.20%</td></tr>
+                    <tr><td>阿里ASR</td><td>2.93%</td><td>2.73%</td><td>-</td><td>-</td></tr>
+                    <tr><td>百度ASR</td><td>8.57%</td><td>7.70%</td><td>-</td><td>-</td></tr>
+                </tbody>
+            </table>
+
+            <h3>处理速度对比 (平均每文件处理时间/秒)</h3>
+            <table>
+                <thead>
+                    <tr><th>ASR模型</th><th>真人录制音频</th><th>Fish-Speech-1.5</th><th>Index-TTS</th><th>F5-TTS</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>SenseVoice</td><td>-</td><td>0.16</td><td>0.11</td><td>0.11</td></tr>
+                    <tr><td>Dolphin</td><td>-</td><td>0.30~0.59</td><td>0.49</td><td>0.53</td></tr>
+                    <tr><td>FunASR-GPU</td><td>-</td><td>0.50</td><td>1.00</td><td>0.87</td></tr>
+                    <tr><td>Kimi-Audio</td><td>-</td><td>1.19</td><td>1.51</td><td>1.51</td></tr>
+                    <tr><td>FireRedASR</td><td>1.69</td><td>2.35</td><td>1.73</td><td>12.3</td></tr>
+                    <tr><td>阿里ASR</td><td>2.61</td><td>2.32</td><td>-</td><td>-</td></tr>
+                    <tr><td>百度ASR</td><td>11.54</td><td>9.82</td><td>-</td><td>-</td></tr>
+                </tbody>
+            </table>
+
+            <h3>实时因子(RTF)对比</h3>
+            <table>
+                <thead>
+                    <tr><th>ASR模型</th><th>真人录制音频</th><th>Fish-Speech-1.5</th><th>Index-TTS</th><th>F5-TTS</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>SenseVoice</td><td>-</td><td>0.017</td><td>0.0049</td><td>0.0054</td></tr>
+                    <tr><td>Dolphin</td><td>-</td><td>0.032、0.062</td><td>0.0229</td><td>0.0269</td></tr>
+                    <tr><td>FunASR-GPU</td><td>-</td><td>0.053</td><td>0.0471</td><td>0.0436</td></tr>
+                    <tr><td>FunASR-CPU</td><td>-</td><td>0.070</td><td>0.2648</td><td>-</td></tr>
+                    <tr><td>Kimi-Audio</td><td>-</td><td>0.124</td><td>0.0711</td><td>0.0760</td></tr>
+                    <tr><td>FireRedASR</td><td>0.15</td><td>0.246</td><td>0.0816</td><td>0.6190（T4）</td></tr>
+                    <tr><td>阿里ASR</td><td>0.23</td><td>0.242</td><td>-</td><td>-</td></tr>
+                    <tr><td>百度ASR</td><td>1.02</td><td>1.028</td><td>0.0229</td><td>-</td></tr>
+                </tbody>
+            </table>
+            <p class="text-sm text-slate-500">*注: RTF(实时因子)是处理时间与音频实际长度的比值，值越小表示实时性能越好，小于1表示可以实时处理。</p>
+        </div>
+
+        <div class="card">
+            <h2>综合性能分析与结论</h2>
+            <h3>多数据集准确性比较</h3>
+            <ul class="list-disc list-inside">
+                <li><strong>最佳准确性模型</strong>:
+                    <ul class="list-disc list-inside ml-6">
+                        <li>FireRedASR在所有测试数据集上表现最佳，CER均在2.30%以下。</li>
+                        <li>Kimi-Audio紧随其后，在TTS生成音频上表现尤为突出 (CER < 1%)。</li>
+                        <li>SenseVoice保持稳定的良好表现，CER通常在1-2%之间。</li>
+                    </ul>
+                </li>
+                <li><strong>准确性表现异常</strong>:
+                    <ul class="list-disc list-inside ml-6">
+                        <li>Dolphin在不同TTS数据集上表现差异极大 (2.92%-19.39%)，对Index-TTS音频的识别尤其困难。</li>
+                        <li>百度ASR在测试中表现相对较弱。</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3 class="mt-6">多数据集速度比较</h3>
+            <ul class="list-disc list-inside">
+                <li><strong>最快处理速度</strong>:
+                    <ul class="list-disc list-inside ml-6">
+                        <li>SenseVoice在所有测试中速度最快，平均处理时间仅0.11-0.16秒/文件。</li>
+                        <li>Dolphin处理速度次之，平均0.30-0.59秒/文件。</li>
+                        <li>FunASR-GPU处理速度表现优秀，平均0.50-1.00秒/文件。</li>
+                    </ul>
+                </li>
+                <li><strong>处理速度受硬件影响明显</strong>:
+                    <ul class="list-disc list-inside ml-6">
+                        <li>同一模型在不同硬件上表现差异大 (如FireRedASR在T4 vs 4090)。</li>
+                        <li>CPU版本模型通常比GPU版本慢3-10倍。</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3 class="mt-6">资源消耗比较</h3>
+            <ul class="list-disc list-inside">
+                <li><strong>最低资源消耗</strong>:
+                    <ul class="list-disc list-inside ml-6">
+                        <li>SenseVoice只需约1.5GB显存，是显存占用最小的GPU模型。</li>
+                        <li>FunASR-CPU可在无GPU环境运行，但速度会大幅降低。</li>
+                    </ul>
+                </li>
+                <li><strong>高资源需求</strong>:
+                    <ul class="list-disc list-inside ml-6">
+                        <li>Kimi-Audio需约30GB显存，要求高性能GPU。</li>
+                        <li>FireRedASR显存需求中等至较高(5.6-9.6GB)。</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3 class="mt-6">不同TTS音频来源影响</h3>
+            <ul class="list-disc list-inside">
+                <li>不同TTS引擎生成的音频对ASR识别准确率有显著影响。</li>
+                <li>Index-TTS和F5-TTS生成的音频通常比Fish-Speech-1.5更易被识别。</li>
+                <li>模型对不同TTS数据的适应性存在差异，如Dolphin对不同TTS音频的识别能力差异极大。</li>
+            </ul>
+        </div>
+
+        <div class="card bg-yellow-50 border border-yellow-300">
+            <h2>注意事项</h2>
+            <ul class="list-disc list-inside text-yellow-700">
+                <li>测试结果仅基于特定数据集，实际应用中模型表现可能有所不同。</li>
+                <li>硬件配置对模型性能有显著影响，应根据实际部署环境选择合适的模型。</li>
+                <li>所有测试模型在处理测试文件时都达到了100%的成功率，但在实际应用中可能面临更复杂的情况。</li>
+            </ul>
+        </div>
+
+        <footer class="text-center mt-12 py-6 border-t border-slate-200">
+            <p class="text-sm text-slate-500">
+                数据来源: <a href="https://github.com/reilxlx/ASR-Model-Comparison" target="_blank" class="text-blue-600 hover:underline">reilxlx/ASR-Model-Comparison GitHub Repository</a>
+            </p>
+        </footer>
+
+    </div>
+</body>
+</html>
