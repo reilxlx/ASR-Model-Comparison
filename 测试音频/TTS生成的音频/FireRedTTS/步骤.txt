@@ -1,0 +1,21 @@
+AutoDL学术加速
+source /etc/network_turbo
+
+取消加速
+unset http_proxy && unset https_proxy
+
+安装FireRedTTS
+conda create --name redtts python=3.10
+https://github.com/FireRedTeam/FireRedTTS.git
+cd fireredtts
+pip install -e . 
+cd ..
+pip install -r requirements.txt
+
+使用huggingface_downloader.py 下载模型
+python huggingface_downloader.py FireRedTeam/FireRedTTS-1S ./pretrained_models
+
+程序运行时注意参考代码中的import，需要修改为以下：
+from fireredtts.models.fireredtts import FireRedTTS 
+并且fireredtts.py代码也需要用本项目中的fireredtts.py替换，对于synthesize优化.
+(以上问题都是在cuda12.4版本，torch==2.7.0 torchaudio==2.7.0 torchvision==0.22.0，遇到的)
