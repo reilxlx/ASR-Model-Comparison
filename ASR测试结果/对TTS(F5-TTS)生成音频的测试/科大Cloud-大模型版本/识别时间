@@ -1,0 +1,11 @@
+==============================
+Batch ASR Processing Summary
+==============================
+Total files processed: 500
+Successfully recognized files (non-error results): 500
+Results saved to: ./resultsf5.txt
+Total ASR processing time: 10226.29 seconds
+Average ASR time per file: 20.45 seconds
+Total audio duration: 9937.20 seconds
+Real-Time Factor (RTF): 1.029
+==============================

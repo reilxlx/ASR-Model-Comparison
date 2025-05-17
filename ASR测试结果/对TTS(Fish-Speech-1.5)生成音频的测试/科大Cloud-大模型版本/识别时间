@@ -1,0 +1,12 @@
+==============================
+Batch ASR Processing Summary
+==============================
+Total files processed: 171
+Successfully recognized files (non-error results): 171
+Results saved to: ./resultsfish171.txt
+Total ASR processing time: 1710.39 seconds
+Average ASR time per file: 10.00 seconds
+Total audio duration: 1633.99 seconds
+Real-Time Factor (RTF): 1.047
+==============================
+Batch ASR process finished.
