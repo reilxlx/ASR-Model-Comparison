@@ -75,6 +75,26 @@
             background-color: #f1f5f9; /* Tailwind slate-100 */
             font-weight: 600; /* Tailwind font-semibold */
             color: #1e293b; /* Tailwind slate-800 */
+            position: relative;
+            cursor: pointer;
+        }
+        th.sortable:hover {
+            background-color: #e2e8f0; /* Tailwind slate-200 */
+        }
+        th.sortable:after {
+            content: "↕";
+            position: absolute;
+            right: 8px;
+            color: #94a3b8; /* Tailwind slate-400 */
+            font-size: 0.875rem; /* Tailwind text-sm */
+        }
+        th.sort-asc:after {
+            content: "↑";
+            color: #0ea5e9; /* Tailwind sky-500 */
+        }
+        th.sort-desc:after {
+            content: "↓";
+            color: #0ea5e9; /* Tailwind sky-500 */
         }
         tbody tr:nth-child(even) {
             background-color: #f8fafc; /* Tailwind gray-50 */
@@ -145,6 +165,89 @@
             background-color: #1d4ed8; /* Tailwind blue-700 */
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有具有sortable类的表格标题
+            const sortableHeaders = document.querySelectorAll('th.sortable');
+            
+            // 为每个可排序的标题添加点击事件
+            sortableHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const table = this.closest('table');
+                    const tbody = table.querySelector('tbody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    const columnIndex = Array.from(this.parentElement.children).indexOf(this);
+                    const isNumeric = this.classList.contains('numeric');
+                    const isPercentage = this.classList.contains('percentage');
+                    
+                    // 确定排序方向
+                    let sortDirection = 'asc';
+                    if (this.classList.contains('sort-asc')) {
+                        sortDirection = 'desc';
+                        this.classList.remove('sort-asc');
+                        this.classList.add('sort-desc');
+                    } else if (this.classList.contains('sort-desc')) {
+                        sortDirection = 'asc';
+                        this.classList.remove('sort-desc');
+                        this.classList.add('sort-asc');
+                    } else {
+                        this.classList.add('sort-asc');
+                    }
+                    
+                    // 移除所有其他列的排序状态
+                    sortableHeaders.forEach(h => {
+                        if (h !== this) {
+                            h.classList.remove('sort-asc', 'sort-desc');
+                        }
+                    });
+                    
+                    // 排序行
+                    rows.sort((rowA, rowB) => {
+                        let cellA = rowA.querySelectorAll('td')[columnIndex].textContent.trim();
+                        let cellB = rowB.querySelectorAll('td')[columnIndex].textContent.trim();
+                        
+                        // 处理百分比值
+                        if (isPercentage) {
+                            // 提取百分比值并转换为数字
+                            cellA = parseFloat(cellA.replace(/[^0-9.]/g, ''));
+                            cellB = parseFloat(cellB.replace(/[^0-9.]/g, ''));
+                        } 
+                        // 处理数值（包括RTF和其他数值）
+                        else if (isNumeric) {
+                            // 处理特殊情况，如多个值分开的情况 (如 "0.59/0.30*")
+                            if (cellA.includes('/')) cellA = parseFloat(cellA.split('/')[0]);
+                            if (cellB.includes('/')) cellB = parseFloat(cellB.split('/')[0]);
+                            
+                            // 处理带"～"或"~"的近似值
+                            cellA = cellA.replace(/[～~]/g, '');
+                            cellB = cellB.replace(/[～~]/g, '');
+                            
+                            // 转换为数字
+                            cellA = parseFloat(cellA);
+                            cellB = parseFloat(cellB);
+                        }
+                        
+                        // 处理非数值或空值
+                        if (cellA === '-') return sortDirection === 'asc' ? 1 : -1;
+                        if (cellB === '-') return sortDirection === 'asc' ? -1 : 1;
+                        if (isNaN(cellA) && isNaN(cellB)) return 0;
+                        if (isNaN(cellA)) return sortDirection === 'asc' ? 1 : -1;
+                        if (isNaN(cellB)) return sortDirection === 'asc' ? -1 : 1;
+                        
+                        // 数值比较
+                        if (sortDirection === 'asc') {
+                            return cellA - cellB;
+                        } else {
+                            return cellB - cellA;
+                        }
+                    });
+                    
+                    // 重新添加排序后的行
+                    rows.forEach(row => tbody.appendChild(row));
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -205,17 +308,21 @@
 
         <div class="card">
             <h2>模型测试结果</h2>
+            <div class="bg-blue-50 p-4 rounded-lg mb-4 text-blue-700 border border-blue-200">
+                <h4 class="text-blue-800 font-semibold mb-2">表格排序功能</h4>
+                <p>点击带有"↕"标记的列标题可以按照该列数据进行排序。再次点击可以切换升序/降序排列。这对比较不同模型的性能特别有用。</p>
+            </div>
             <h3>对真人录制音频的测试结果 (171个文件)</h3>
             <table>
                 <thead>
                     <tr>
                         <th>ASR模型</th>
-                        <th>平均字符错误率(CER)</th>
-                        <th>处理总时间(秒)</th>
-                        <th>实时因子(RTF)</th>
-                        <th>成功处理文件数</th>
-                        <th>错误文件数</th>
-                        <th>平均处理时间/文件(秒)</th>
+                        <th class="sortable percentage">平均字符错误率(CER)</th>
+                        <th class="sortable numeric">处理总时间(秒)</th>
+                        <th class="sortable numeric">实时因子(RTF)</th>
+                        <th class="sortable numeric">成功处理文件数</th>
+                        <th class="sortable numeric">错误文件数</th>
+                        <th class="sortable numeric">平均处理时间/文件(秒)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -273,10 +380,10 @@
                     <tr>
                         <th>ASR模型</th>
                         <th>文件处理成功率</th>
-                        <th>平均字符错误率(CER)</th>
-                        <th>总处理时间(秒)</th>
-                        <th>平均处理时间/文件(秒)</th>
-                        <th>RTF</th>
+                        <th class="sortable percentage">平均字符错误率(CER)</th>
+                        <th class="sortable numeric">总处理时间(秒)</th>
+                        <th class="sortable numeric">平均处理时间/文件(秒)</th>
+                        <th class="sortable numeric">RTF</th>
                         <th>显存占用</th>
                     </tr>
                 </thead>
@@ -381,10 +488,10 @@
                 <thead>
                     <tr>
                         <th>ASR模型</th>
-                        <th>平均字错误率(CER)</th>
-                        <th>总识别时间(秒)</th>
-                        <th>平均每条音频处理时间(秒)</th>
-                        <th>RTF</th>
+                        <th class="sortable percentage">平均字错误率(CER)</th>
+                        <th class="sortable numeric">总识别时间(秒)</th>
+                        <th class="sortable numeric">平均每条音频处理时间(秒)</th>
+                        <th class="sortable numeric">RTF</th>
                         <th>显存占用</th>
                         <th>测试设备</th>
                     </tr>
@@ -410,12 +517,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th>模型名称</th>
+                        <th>ASR模型</th>
                         <th>处理设备</th>
-                        <th>总处理时间(秒)</th>
-                        <th>平均每文件处理时间(秒)</th>
-                        <th>字符错误率(CER)</th>
-                        <th>RTF</th>
+                        <th class="sortable numeric">总处理时间(秒)</th>
+                        <th class="sortable numeric">平均每文件处理时间(秒)</th>
+                        <th class="sortable percentage">字符错误率(CER)</th>
+                        <th class="sortable numeric">RTF</th>
                         <th>成功处理文件数</th>
                     </tr>
                 </thead>
@@ -435,7 +542,13 @@
             <h3>准确率对比 (CER从低到高排序)</h3>
             <table>
                 <thead>
-                    <tr><th>ASR模型</th><th>真人录制音频</th><th>Fish-Speech-1.5</th><th>Index-TTS</th><th>F5-TTS</th></tr>
+                    <tr>
+                        <th>ASR模型</th>
+                        <th class="sortable percentage">真人录制音频</th>
+                        <th class="sortable percentage">Fish-Speech-1.5</th>
+                        <th class="sortable percentage">Index-TTS</th>
+                        <th class="sortable percentage">F5-TTS</th>
+                    </tr>
                 </thead>
                 <tbody>
                     <tr><td>FireRedASR</td><td>2.30%</td><td>0.93%</td><td>0.54%</td><td>0.82%</td></tr>
@@ -454,7 +567,13 @@
             <h3>处理速度对比 (平均每文件处理时间/秒)</h3>
             <table>
                 <thead>
-                    <tr><th>ASR模型</th><th>真人录制音频</th><th>Fish-Speech-1.5</th><th>Index-TTS</th><th>F5-TTS</th></tr>
+                    <tr>
+                        <th>ASR模型</th>
+                        <th class="sortable numeric">真人录制音频</th>
+                        <th class="sortable numeric">Fish-Speech-1.5</th>
+                        <th class="sortable numeric">Index-TTS</th>
+                        <th class="sortable numeric">F5-TTS</th>
+                    </tr>
                 </thead>
                 <tbody>
                     <tr><td>SenseVoice</td><td>-</td><td>0.16</td><td>0.11（4090）、0.22（3080）</td><td>0.11</td></tr>
@@ -473,7 +592,13 @@
             <h3>实时因子(RTF)对比</h3>
             <table>
                 <thead>
-                    <tr><th>ASR模型</th><th>真人录制音频</th><th>Fish-Speech-1.5</th><th>Index-TTS</th><th>F5-TTS</th></tr>
+                    <tr>
+                        <th>ASR模型</th>
+                        <th class="sortable numeric">真人录制音频</th>
+                        <th class="sortable numeric">Fish-Speech-1.5</th>
+                        <th class="sortable numeric">Index-TTS</th>
+                        <th class="sortable numeric">F5-TTS</th>
+                    </tr>
                 </thead>
                 <tbody>
                     <tr><td>SenseVoice</td><td>-</td><td>0.017</td><td>0.0049</td><td>0.0054</td></tr>
