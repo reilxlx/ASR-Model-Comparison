@@ -198,3 +198,7 @@ audio-16k.zip
 liutao-用于训练
 Index-TTS-1.5/
 audio-pcm/
+audio-pcm-v2/
+audio-pcm-withSilence/
+BaiduCloudWss-Batch.py
+BaiduCloudWss-SingleTest.py
