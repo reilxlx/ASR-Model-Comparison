@@ -354,6 +354,15 @@
                         <td>11.54</td>
                     </tr>
                     <tr>
+                        <td>BaiduCloudWss</td>
+                        <td>3.25%</td>
+                        <td>2519.66</td>
+                        <td>1.31</td>
+                        <td>163</td>
+                        <td>8</td>
+                        <td>14.73</td>
+                    </tr>
+                    <tr>
                         <td>科大Cloud</td>
                         <td>3.50%</td>
                         <td>1912.93</td>
@@ -505,6 +514,7 @@
                     <tr><td>FunASR-GPU</td><td>2.17%</td><td>500.63</td><td>1.00</td><td>0.0471</td><td>3.7GB</td><td>RTX 4090</td></tr>
                     <tr><td>Dolphin</td><td>19.39%</td><td>243</td><td>0.49</td><td>0.0229</td><td>2.1GB</td><td>RTX 4090</td></tr>
                     <tr><td>BaiduCloud</td><td>3.05%</td><td>1105</td><td>2.21</td><td>0.104</td><td>未知</td><td>-</td></tr>
+                    <tr><td>BaiduCloudWss</td><td>1.49%</td><td>12834.19</td><td>25.67</td><td>1.21</td><td>未知</td><td>-</td></tr>
                     <tr><td>阿里ASR</td><td>3.14%</td><td>2517</td><td>5.03</td><td>0.237</td><td>-</td><td>Kunpeng 920</td></tr>
                     <tr><td>百度ASR</td><td>6.43%</td><td>32009.07</td><td>64.02</td><td>3.015</td><td>-</td><td>Kunpeng 920</td></tr>
                     <tr><td>科大Cloud</td><td>0.59%</td><td>5089.40</td><td>10.18</td><td>0.4794</td><td>-</td><td>-</td></tr>
@@ -512,6 +522,7 @@
                 </tbody>
             </table>
             <p class="text-sm text-slate-500">*注: BaiduCloud基于百度公有云短语音识别标准版(https://vop.baidu.com/server_api)。</p>
+            <p class="text-sm text-slate-500">*注: BaiduCloudWss基于百度云WebSocket流式API。</p>
 
             <h3>对F5-TTS生成音频的测试结果 (500个文件)</h3>
             <table>
@@ -556,9 +567,10 @@
                     <tr><td>SenseVoice</td><td>-</td><td>2.23%</td><td>1.13%</td><td>1.41%</td></tr>
                     <tr><td>FunASR-GPU</td><td>-</td><td>3.98%</td><td>2.17%</td><td>2.41%</td></tr>
                     <tr><td>Dolphin</td><td>-</td><td>2.92%</td><td>19.39%</td><td>12.20%</td></tr>
-                    <tr><td>阿里ASR</td><td>2.93%</td><td>2.73%</td><td>-</td><td>-</td></tr>
-                    <tr><td>百度ASR</td><td>8.57%</td><td>7.70%</td><td>-</td><td>-</td></tr>
+                    <tr><td>阿里ASR</td><td>2.93%</td><td>2.73%</td><td>3.14%</td><td>-</td></tr>
+                    <tr><td>百度ASR</td><td>8.57%</td><td>7.70%</td><td>6.43%</td><td>-</td></tr>
                     <tr><td>BaiduCloud</td><td>-</td><td>3.38%</td><td>3.05%</td><td>-</td></tr>
+                    <tr><td>BaiduCloudWss</td><td>3.25%</td><td>-</td><td>1.49%</td><td>-</td></tr>
                     <tr><td>科大Cloud</td><td>3.50%</td><td>-</td><td>0.59%</td><td>-</td></tr>
                     <tr><td>科大Cloud-大模型版本</td><td>5.86%</td><td>2.64%</td><td>0.73%</td><td>1.01%</td></tr>
                 </tbody>
@@ -581,9 +593,10 @@
                     <tr><td>FunASR-GPU</td><td>-</td><td>0.50</td><td>1.00</td><td>0.87</td></tr>
                     <tr><td>Kimi-Audio</td><td>-</td><td>1.19</td><td>1.51</td><td>1.51</td></tr>
                     <tr><td>FireRedASR</td><td>1.69</td><td>2.35</td><td>1.73</td><td>12.3</td></tr>
-                    <tr><td>阿里ASR</td><td>2.61</td><td>2.32</td><td>-</td><td>-</td></tr>
+                    <tr><td>阿里ASR</td><td>2.61</td><td>2.32</td><td>5.03</td><td>-</td></tr>
                     <tr><td>BaiduCloud</td><td>-</td><td>1.31</td><td>2.21</td><td>-</td></tr>
-                    <tr><td>百度ASR</td><td>11.54</td><td>9.82</td><td>-</td><td>-</td></tr>
+                    <tr><td>BaiduCloudWss</td><td>14.73</td><td>-</td><td>25.67</td><td>-</td></tr>
+                    <tr><td>百度ASR</td><td>11.54</td><td>9.82</td><td>64.02</td><td>-</td></tr>
                     <tr><td>科大Cloud</td><td>11.25</td><td>-</td><td>10.18</td><td>-</td></tr>
                     <tr><td>科大Cloud-大模型版本</td><td>12.64</td><td>10.00</td><td>21.77</td><td>20.45</td></tr>
                 </tbody>
@@ -608,8 +621,9 @@
                     <tr><td>Kimi-Audio</td><td>-</td><td>0.124</td><td>0.0711</td><td>0.0760</td></tr>
                     <tr><td>BaiduCloud</td><td>-</td><td>0.138</td><td>0.104</td><td>-</td></tr>
                     <tr><td>FireRedASR</td><td>0.15</td><td>0.246</td><td>0.0816</td><td>0.6190（T4）</td></tr>
-                    <tr><td>阿里ASR</td><td>0.23</td><td>0.242</td><td>-</td><td>-</td></tr>
-                    <tr><td>百度ASR</td><td>1.02</td><td>1.028</td><td>0.0229</td><td>-</td></tr>
+                    <tr><td>阿里ASR</td><td>0.23</td><td>0.242</td><td>0.237</td><td>-</td></tr>
+                    <tr><td>BaiduCloudWss</td><td>1.31</td><td>-</td><td>1.21</td><td>-</td></tr>
+                    <tr><td>百度ASR</td><td>1.02</td><td>1.028</td><td>3.015</td><td>-</td></tr>
                     <tr><td>科大Cloud</td><td>0.9871</td><td>-</td><td>0.4794</td><td>-</td></tr>
                     <tr><td>科大Cloud-大模型版本</td><td>1.003</td><td>1.047</td><td>1.025</td><td>1.029</td></tr>
                 </tbody>
